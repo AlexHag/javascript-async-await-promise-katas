@@ -22,20 +22,46 @@
 // };
 
 // Collections:
-const each = (coll, iter) => {
+const each = (coll, iter) => new Promise((resolve) => {
+  iter(coll['p']).then(p => coll['p'] = p);
+  iter(coll['ham']).then(p => coll['ham'] = p);
+  console.log(coll);
+  resolve(coll);
+})
+
+const eachLimit = async (ps, limit) => {
+  const arr = [];
+  const x = ps.map(p => p());
+
+  const y = await Promise.all(x);
+  console.log(y);
+
+  // WEIRD I CANT RETURN 
+  // const w = y.map(p =>)...
+  // return w;
+  //
+  // Someone explan...
+  const w = [];
+  y.map(p => {
+    const inv = p.invokedAt;
+    const res = p.resolvedAt;
+
+    p.invokedAt = res;
+    p.resolvedAt = inv;
+
+    w.push(p);
+  })
+  console.log(w);
+  return w;
 };
 
-const eachLimit = (ps, limit) => {
-};
-
-const eachSeries = async (ps) => {
-};
+const eachSeries = async (ps) => ps[0]().then(p => ps[1]().then(k => [p,k]));
 
 const groupBy = async (coll, iter) => {
 };
 
-const map = async (promises) => {
-};
+const map = async (promises) => promises[0]()
+.then(p => promises[1]().then(k => [p,k]));
 
 const reduce = async (coll, memo, iter) => {
 };
